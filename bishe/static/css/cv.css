@@ -1,0 +1,75 @@
+.portfolio-block {
+    padding-bottom: 60px;
+    padding-top: 60px;
+}
+
+.portfolio-block.block-intro .avatar {
+    width: 180px;
+    height: 180px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    margin: auto;
+    border-radius: 100px;
+    margin-bottom: 30px;
+}
+
+.mdui-text-color-white {
+    color: rgba(0,0,0,.87)!important;
+}
+
+a:link{
+    color: black;
+    text-decoration: none;
+}
+
+a:hover{
+    color: cornflowerblue;
+    text-decoration: none;
+}
+a:visited{
+    color: black;
+    text-decoration: none;
+}
+
+a:active{
+    color: cornflowerblue;
+    text-decoration: none;
+}
+
+.portfolio-block.cv .group .fail {
+    font-size: .85em;
+    background-color: crimson;
+    display: inline-block;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 2em;
+}
+
+.portfolio-block.cv .group .pending {
+  font-size: .85em;
+  background-color: #0ea0ff;
+  display: inline-block;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 2em;
+}
+
+.portfolio-block.cv .group .pass {
+    font-size: .85em;
+    background-color: #20c997;
+    display: inline-block;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 2em;
+}
+
+.portfolio-block.cv .education.group .fail {
+    background-color: crimson;
+}
+
+.portfolio-block.cv .education.group .pass {
+    background-color: #20c997;
+}
+
+
+

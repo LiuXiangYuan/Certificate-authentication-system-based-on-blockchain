@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+
+{% block title %}查询: {{ q }}{% endblock %}
+
+{% block style %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+{% endblock %}
+
+{% block main %}
+    <main class="page">
+        {% for message in get_flashed_messages(with_categories=True) %}
+            <div class="alert alert-{{ message[0] }}">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{ message[1] }}
+            </div>
+        {% endfor %}
+        <section class="portfolio-block cv">
+            <div class="container">
+                {% if current_user.is_authenticated and current_user.role == '2' %}
+                    <div class="page-header">
+                        <h3>查询: {{ q }}</h3>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="nav nav-pills flex-column" role="tablist" aria-orientation="vertical">
+                                <a class="nav-item nav-link {% if category == 'academic' %}active{% endif %}"
+                                   href="{{ url_for('function.search', q=q, category='academic') }}">学历证书</a>
+                                <a class="nav-item nav-link {% if category == 'apply' %}active{% endif %}"
+                                   href="{{ url_for('function.search', q=q, category='apply') }}">申请表</a>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="group">
+                                {% if results %}
+                                    <h5>{{ results|length }} 个相关结果</h5>
+                                    {% for item in results %}
+                                        {% if category == 'academic' %}
+                                            <div class="item">
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <a href="{{ url_for('function.profile_academic', hash_value=item.hash_value) }}">
+                                                            <h3>
+                                                                {{ item.school }} - {{ item.major }} -
+                                                                {{ item.type }} - {{ item.name }}
+                                                            </h3>
+                                                        </a>
+                                                        {% if item.status == 1 %}
+                                                            <h4 class="pass">正常</h4>
+                                                        {% else %}
+                                                            <h4 class="fail">已撤销</h4>
+                                                        {% endif %}
+
+                                                        <span class="period">
+                                                            {{ item.in_time }} - {{ item.out_time }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% elif category == 'apply' %}
+                                            <div class="item">
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <a href="{{ url_for('function.profile_apply', apply_id=item.id) }}">
+                                                            <h3>
+                                                                {{ item.school }} - {{ item.major }} -
+                                                                {{ item.type }} - {{ item.name }}
+                                                            </h3>
+                                                        </a>
+                                                        {% if item.apply_statue == 1 %}
+                                                            <h4 class="pass">通过</h4>
+                                                        {% elif item.apply_statue == 2 %}
+                                                            <h4 class="pending">待审核</h4>
+                                                        {% elif item.apply_statue == 0 %}
+                                                            <h4 class="fail">未通过</h4>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <h5 class="tip">无相关结果.</h5>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="page-header">
+                        <h3>查询: {{ q }}</h3>
+                        {% if results %}
+                            <p>{{ results|length }} 个相关结果</p>
+                        {% else %}
+                            <h5 class="tip">无相关结果.</h5>
+                        {% endif %}
+                    </div>
+                    <div class="group">
+                        {% if results %}
+                            {% for item in results %}
+                                <div class="item">
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <a href="{{ url_for('function.profile_academic', hash_value=item.hash_value) }}">
+                                                <h3>
+                                                    {{ item.school }} - {{ item.major }} -
+                                                    {{ item.type }} - {{ item.name }}
+                                                </h3>
+                                            </a>
+                                            {% if item.status == 1 %}
+                                                <h4 class="pass">正常</h4>
+                                            {% else %}
+                                                <h4 class="fail">已撤销</h4>
+                                            {% endif %}
+
+                                            <span class="period">
+                                                {{ item.in_time }} - {{ item.out_time }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                {% if results %}
+                    <div class="page-footer">
+                        {% if current_user.role == '2' %}
+                            {{ render_pagination(pagination, align='right') }}
+                        {% else %}
+                            {{ render_pagination(pagination, align='bottom') }}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+{% endblock %}

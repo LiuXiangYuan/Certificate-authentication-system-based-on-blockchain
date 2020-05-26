@@ -1,0 +1,314 @@
+{% extends 'base.html' %}
+
+{% block title %} 个人中心 {% endblock %}
+
+{% block style %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mdui.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cv.css') }}">
+{% endblock %}
+
+{% block main %}
+    <main class="page cv-page">
+        {% for message in get_flashed_messages(with_categories=True) %}
+            <div class="alert alert-{{ message[0] }}" role="alert">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{ message[1] }}
+            </div>
+        {% endfor %}
+        <section class="portfolio-block block-intro border-bottom">
+            <div class="container">
+                <div class="about-me">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="avatar" style="background-image:url({{ url_for('function.get_avatar', filename=current_user.image) }});"></div>
+                        </div>
+                        <div class="col">
+                            <div class="contact-info portfolio-info-card">
+                                <div class="row">
+                                    <div class="col-1"><i class="icon ion-person icon"></i></div>
+                                    <div class="col-9"><span>{{ message['name'] }}</span></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-1"><i class="icon ion-ios-telephone icon"></i></div>
+                                    <div class="col-9"><span>{{ current_user.phone }}</span></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-1"><i class="icon ion-at icon"></i></div>
+                                    <div class="col-9"><span>{{ current_user.email }}</span></div>
+                                </div>
+                                {% if current_user.role != "1" %}
+                                    <div class="row">
+                                        <div class="col-1"><i class="icon ion-university icon"></i></div>
+                                        <div class="col-9"><span>{{ message['organization'] }}</span></div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <p></p>
+                    <button class="btn btn-outline-primary" mdui-dialog="{target: '#update-info-dialog'}">编辑个人信息</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="portfolio-block cv">
+            <div class="container">
+                {% if current_user.role == "1" %}
+                    <div class="education group">
+                        <div class="heading">
+                            <h2 class="text-center">个人学历</h2>
+                        </div>
+                        {% if not academics %}
+                            <p>暂无通过的学历证书</p>
+                        {% else %}
+                            {% for academic in academics %}
+                                <div class="item">
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <a href="{{ url_for('function.profile_academic', hash_value=academic.hash_value) }}">
+                                                <h3>
+                                                    {{ academic.school }} - {{ academic.major }} -
+                                                    {{ academic.type }} - {{ academic.name }}
+                                                </h3>
+                                            </a>
+                                            {% if academic.status == 1 %}
+                                                <h4 class="pass">正常</h4>
+                                            {% else %}
+                                                <h4 class="fail">已撤销</h4>
+                                            {% endif %}
+
+                                            <span class="period">
+                                                {{ academic.in_time }} - {{ academic.out_time }}
+                                            </span>
+                                        </div>
+                                        <div class="col-6">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div class="work-experience group">
+                        <div class="heading">
+                            <h2 class="text-center">申请表</h2>
+                        </div>
+                        {% if not apply_tables %}
+                            <p>暂无申请表信息</p>
+                        {% else %}
+                            {% for apply_table in apply_tables %}
+                                <div class="item">
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <a href="{{ url_for('function.profile_apply', apply_id=apply_table.id) }}">
+                                                <h3>
+                                                    {{ apply_table.school }} - {{ apply_table.major }} -
+                                                    {{ apply_table.type }} - {{ apply_table.name }}
+                                                </h3>
+                                            </a>
+                                            {% if apply_table.apply_statue == 1 %}
+                                                <h4 class="pass">通过</h4>
+                                            {% elif apply_table.apply_statue == 2 %}
+                                                <h4 class="pending">待审核</h4>
+                                            {% elif apply_table.apply_statue == 0 %}
+                                                <h4 class="fail">未通过</h4>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+{#---------------------------------------------------#}
+                {% elif current_user.role == "2" %}
+                    <div class="education group">
+                        <div class="heading">
+                            <h2 class="text-center">已处理的通过的学历</h2>
+                        </div>
+                        {% if not pass_academics %}
+                            <p>暂无已处理的通过的学历</p>
+                        {% else %}
+                            {% for academic in pass_academics %}
+                                <div class="item">
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <a href="{{ url_for('function.profile_academic', hash_value=academic.hash_value) }}">
+                                                <h3>
+                                                    {{ academic.school }} - {{ academic.major }} -
+                                                    {{ academic.type }} - {{ academic.name }}
+                                                </h3>
+                                            </a>
+                                            {% if academic.status == 1 %}
+                                                <h4 class="pass">正常</h4>
+                                            {% else %}
+                                                <h4 class="fail">已撤销</h4>
+                                            {% endif %}
+
+                                            <span class="period">
+                                                {{ academic.in_time }} - {{ academic.out_time }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div class="work-experience group">
+                        <div class="heading">
+                            <h2 class="text-center">已处理申请表</h2>
+                        </div>
+                        {% if not apply_tables %}
+                            <p>无已处理的申请表信息</p>
+                        {% else %}
+                            {% for apply_table in apply_tables %}
+                                <div class="item">
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <a href="{{ url_for('function.profile_apply', apply_id=apply_table.id) }}">
+                                                <h3>
+                                                    {{ apply_table.school }} - {{ apply_table.major }} -
+                                                    {{ apply_table.type }} - {{ apply_table.name }}
+                                                </h3>
+                                            </a>
+                                            {% if apply_table.apply_statue == 1 %}
+                                                <h4 class="pass">通过</h4>
+                                            {% elif apply_table.apply_statue == 2 %}
+                                                <h4 class="pending">待审核</h4>
+                                            {% elif apply_table.apply_statue == 0 %}
+                                                <h4 class="fail">未通过</h4>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div class="education group">
+                        <div class="heading">
+                            <h2 class="text-center">已撤销的学历</h2>
+                        </div>
+                        {% if not revoke_tables %}
+                            <p>暂无已撤销的学历</p>
+                        {% else %}
+                            {% for revoke_table in revoke_tables %}
+                                <div class="item">
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <a href="{{ url_for('function.profile_academic', hash_value=revoke_table.academic.hash_value) }}">
+                                                <h3>
+                                                    {{ revoke_table.academic.school }} - {{ revoke_table.academic.major }} -
+                                                    {{ revoke_table.academic.type }} - {{ revoke_table.academic.name }}
+                                                </h3>
+                                            </a>
+                                            {% if revoke_table.academic.status == 1 %}
+                                                <h4 class="pass">正常</h4>
+                                            {% else %}
+                                                <h4 class="fail">已撤销</h4>
+                                            {% endif %}
+
+                                            <span class="period">
+                                                {{ revoke_table.academic.in_time }} - {{ revoke_table.academic.out_time }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+            </div>
+        </section>
+    </main>
+
+    <div class="mdui-dialog" id="update-info-dialog">
+        <div class="mdui-dialog-content">
+            <div class="mdui-appbar mdui-appbar-fixed">
+                <div class="mdui-toolbar mdui-color-theme mdui-text-color-white">
+                    <a mdui-dialog-close class="mdui-btn mdui-btn-icon">
+                        <i class="mdui-icon material-icons">X</i>
+                    </a>
+                    <span class="mdui-typo-title">更新个人信息</span>
+                </div>
+            </div>
+            <!-- 浮动标签 -->
+            <p style="margin-top:60px">留空项则不更新</p>
+            <div class="mdui-textfield mdui-textfield-floating-label">
+                <label class="mdui-textfield-label">电话号码</label>
+                <input id="update-phone" class="mdui-textfield-input" />
+            </div>
+            <div class="mdui-textfield mdui-textfield-floating-label">
+                <label class="mdui-textfield-label">邮箱</label>
+                <input id="update-email" class="mdui-textfield-input" />
+            </div>
+            <div class="mdui-textfield mdui-textfield-floating-label">
+                <label class="mdui-textfield-label">密码</label>
+                <input id="update-password" class="mdui-textfield-input" />
+            </div>
+            <button onclick="updateInfo();" class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent mdui-float-right">
+                更新
+            </button>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script src="{{ url_for('static', filename='js/mdui.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/cv.js') }}"></script>
+    <script>
+        function updateInfo() {
+            var infoObj = new Object();
+
+            var uPhone = $('#update-phone').val();
+            if(uPhone != undefined && uPhone !='') {
+                if(!check_phone($('#update-phone').val())) return;
+
+                infoObj.phone = $('#update-phone').val();
+            }
+
+            var uEmail = $('#update-email').val();
+            if(uEmail != undefined && uEmail != '') {
+                if(!check_email($('#update-email').val())) return;
+                infoObj.email = $('#update-email').val();
+            }
+
+            var uPassword = $('#update-password').val();
+                infoObj.password = $('#update-password').val();
+
+            var csrf_token = "{{ csrf_token() }}";
+            var url = "{{ url_for('users.update') }}";
+
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader('X-CSRFToken', csrf_token);
+                    }
+                }
+            });
+
+            var updateResult = $.ajax({
+                type: 'POST',
+                url: url,
+                async: false,
+                contentType: "application/json",
+                dataType: "json",
+                data: JSON.stringify(infoObj),
+            }).responseJSON;
+            if (updateResult.success != true){
+                mdui.snackbar('失败：' + updateResult.message);
+                return;
+            }
+            else if(updateResult.success == true)
+            {
+                mdui.snackbar('更新成功');
+                if(uPassword != undefined && uPassword != '')
+                    window.location.href = "{{ url_for('homepage.index') }}";
+                else
+                    location.reload();
+            }
+        }
+    </script>
+{% endblock %}

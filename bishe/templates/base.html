@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+        <title>{% block title %}{% endblock title %}</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400,700">
+        <link rel="stylesheet" href="{{ url_for('static', filename='fonts/ionicons.min.css') }}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/css/pikaday.min.css">
+        {% block style %}{% endblock style %}
+    {% endblock  head %}
+</head>
+<body>
+{% block nav %}
+    <nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-white portfolio-navbar gradient">
+        <div class="container">
+            <a class="navbar-brand logo" href="{{ url_for('homepage.index') }}">学历查询认证系统</a>
+            <button class="navbar-toggler" data-toggle="collapse" data-target="#navbarNav">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="nav navbar-nav ml-auto">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" href="{{ url_for('users.cv') }}">个人中心</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" href="{{ url_for('auth.logout') }}">退出</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" href="{{ url_for('auth.register') }}">注册</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" href="{{ url_for('auth.login') }}">登录</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endblock nav %}
+{% block main %}{% endblock main %}
+{% block footer %}
+    <footer class="page-footer">
+        <small> © 2020 <a class="blue-text link" href="#" title="Written by XiangYuan">XiangYuanLiu</a> -
+            <a class="blue-text link" href="#" title="A HelloFlask project">山东大学计算机学院</a>
+        </small>
+    </footer>
+{% endblock footer %}
+{% block scripts %}
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/pikaday.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/script.min.js') }}"></script>
+{% endblock scripts %}
+{% block js %}{% endblock js %}
+</body>
+</html>

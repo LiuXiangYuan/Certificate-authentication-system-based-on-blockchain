@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import form_field %}
+{% from 'bootstrap/form.html' import render_form %}
+
+{% block title %} 申请学历 {% endblock %}
+
+{% block style %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/apply.css') }}">
+{% endblock %}
+
+{% block main %}
+    <main class="page hire-me-page">
+        {% for message in get_flashed_messages(with_categories=True) %}
+            <div class="alert alert-{{ message[0] }}" role="alert">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{ message[1] }}
+            </div>
+        {% endfor %}
+
+        <section class="portfolio-block hire-me">
+            <form method="post" enctype="multipart/form-data" action="{{ request.full_path }}">
+                {{ form.csrf_token }}
+
+                <div class="form-group">
+                    <label>姓名</label>
+                    <p style="display: block; white-space: nowrap; text-overflow: ellipsis; width: 100%;">
+                        {{ message['name'] }}
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    {{ form_field(form.image, class='form-control-file', onchange='checkField()', accept='.jpg, .jpeg, .png') }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_field(form.school, class='form-control') }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_field(form.department, class='form-control') }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_field(form.major, class='form-control') }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_field(form.in_time, class='form-control', type='date') }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_field(form.out_time, class='form-control', type='date') }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_field(form.type, class='form-control') }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_field(form.level, class='form-control') }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_field(form.year, class='form-control') }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.submit(class="btn btn-primary btn-block") }}
+                </div>
+            </form>
+        </section>
+    </main>
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        function checkField() {
+            var reg = /\/(?:jpeg|png|jpg)/;
+            var postfixReg = /.+\./;
+
+            var file = document.getElementById('image').files[0];
+            if(reg.test(file.type)){
+                if(file.size > 3 * 1024 * 1024){
+                    alert('图片大小不能超过3M');
+                    document.getElementById('image').value = '';
+                    document.getElementById('image').files[0] = '';
+                    return;
+                }
+            }
+            else{
+                alert('请上传正确格式的图片');
+                document.getElementById('image').value = '';
+                document.getElementById('image').files[0] = '';
+                return;
+            }
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,2 @@
+FLASK_APP=bishe
+FLASK_ENV=development

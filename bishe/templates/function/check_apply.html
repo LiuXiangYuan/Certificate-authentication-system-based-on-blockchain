@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    申请表 - {{ apply_table.school }} - {{ apply_table.major }} - {{ apply_table.type }} - {{ apply_table.name }}
+{% endblock %}
+
+{% block style %}
+    <style type="text/css">
+		.portfolio-block {
+			padding-bottom: 100px;
+			padding-top: 50px;
+		}
+
+		td{
+			width: 100px;
+		}
+
+        .three_button{
+            padding-bottom: 10px;
+        }
+	</style>
+{% endblock %}
+
+{% block main %}
+    <main class="page lanidng-page">
+        {% for message in get_flashed_messages(with_categories=True) %}
+            <div class="alert alert-{{ message[0] }}" role="alert">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{ message[1] }}
+            </div>
+        {% endfor %}
+        <section class="portfolio-block block-intro">
+            <div class="container">
+                <div class="center-block three_button">
+                    <input type='button' name='submit' onclick='javascript:history.back(-1);' value='返回上一页'>
+                    {% if session['message']['organization'] == apply_table.school %}
+                        {% if apply_table.apply_statue == 2 %}
+                            <button data-toggle="modal" data-target="#confirm-pass">通过</button>
+                            <button data-toggle="modal" data-target="#confirm-unpass">不通过</button>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <table border="1" width="800" height="800" align="center" cellspacing="0">
+					<tr align="center">
+						<td bgcolor="#ededed">姓名</td>
+						<td colspan="2">{{ apply_table.name }}</td>
+						<td bgcolor="#ededed">毕业院校</td>
+						<td colspan="2">{{ apply_table.school }}</td>
+						<td colspan="2" rowspan="3">
+                            <img src="{{ url_for('function.get_image', filename=apply_table.image) }}"
+                            style="height: 20%; width: 100%">
+                        </td>
+					</tr>
+					<tr align="center">
+						<td bgcolor="#ededed">学院名称</td>
+						<td colspan="2">{{ apply_table.department }}</td>
+						<td bgcolor="#ededed">专业名称</td>
+						<td colspan="2">{{ apply_table.major }}</td>
+					</tr>
+					<tr align="center">
+						<td bgcolor="#ededed">入学时间</td>
+						<td colspan="2">{{ apply_table.in_time }}</td>
+						<td bgcolor="#ededed">毕业时间</td>
+						<td colspan="2">{{ apply_table.out_time }}</td>
+					</tr>
+					<tr align="center">
+						<td bgcolor="#ededed">学历类型</td>
+						<td colspan="2">{{ apply_table.type }}</td>
+						<td bgcolor="#ededed">学历层次</td>
+						<td colspan="2">{{ apply_table.level }}</td>
+						<td bgcolor="#ededed">学制</td>
+						<td>{{ apply_table.year }}</td>
+					</tr>
+					<tr align="center">
+						<td bgcolor="#ededed">申请时间</td>
+						<td colspan="2">{{ apply_table.apply_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+						<td bgcolor="#ededed">处理人</td>
+                        {% if not apply_table.dealer %}
+						    <td colspan="2"></td>
+                        {% else %}
+                            <td colspan="2">{{ apply_table.dealer.name }}</td>
+                        {% endif %}
+                        <td bgcolor="#ededed">申请状态</td>
+                        {% if apply_table.apply_statue == 0 %}
+						    <td colspan="1">未通过</td>
+                        {% elif apply_table.apply_statue == 1 %}
+                            <td colspan="1">通过</td>
+                        {% elif apply_table.apply_statue == 2 %}
+                            <td colspan="1">待审核</td>
+                        {% endif %}
+					</tr>
+                    {% if apply_table.apply_statue == 1 %}
+                        <tr align="center">
+                            <td bgcolor="#ededed">通过时间</td>
+						    <td colspan="2">{{ apply_table.deal_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                            <td bgcolor="#ededed">证书hash值</td>
+                            <td colspan="4" align="left" valign="top">
+                                <a style="word-break: break-all; font-size: 16px" href="{{ url_for('function.profile_academic', hash_value=apply_table.hash_value) }}">
+                                    {{ apply_table.hash_value }}
+                                </a>
+                            </td>
+                        </tr>
+                    {% endif %}
+					<tr align="center">
+						<td bgcolor="#ededed" rowspan="2">备注</td>
+						<td colspan="7" rowspan="2" align="left" valign="top">
+                            {% if apply_table.remark %}
+                                <p style="word-break: break-all; font-size: 16px">{{ apply_table.remark|safe }}</p>
+                            {% endif %}
+                        </td>
+					</tr>
+				</table>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal fade" id="confirm-pass" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
+             aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">请确认申请表是否通过</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <p>是否确认该申请表通过?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal">取消</button>
+                    <button type="button" onclick="pass_confirm()">通过</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirm-unpass" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
+             aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">请确认申请表是否不通过</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="reason" style="width: 100%; height: 100px; margin-top:5px;" placeholder="请输入不通过的原因"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal">取消</button>
+                    <button type="button" onclick="unpass_confirm()">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        function pass_confirm() {
+            var infoObj = new Object();
+            infoObj.apply_id = {{ apply_table.id }};
+
+            var csrf_token = "{{ csrf_token() }}";
+            var url = "{{ url_for('function.pass_confirm', apply_id=apply_table.id) }}";
+
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader('X-CSRFToken', csrf_token);
+                    }
+                }
+            });
+
+            var updateResult = $.ajax({
+                type: 'POST',
+                url: url,
+                async: false,
+                contentType: "application/json",
+                dataType: "json",
+                data: JSON.stringify(infoObj),
+            }).responseJSON;
+            if (updateResult.success != true){
+                alert('通过失败，请联系管理员');
+                return;
+            }
+            else if(updateResult.success == true)
+            {
+                location.reload(true);
+            }
+        }
+
+        function unpass_confirm() {
+            var infoObj = new Object();
+            var reason = $('#reason').val();
+            if(reason == undefined)
+                reason = '';
+            infoObj.reason = reason;
+
+            var csrf_token = "{{ csrf_token() }}";
+            var url = "{{ url_for('function.unpass_confirm', apply_id=apply_table.id) }}";
+
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader('X-CSRFToken', csrf_token);
+                    }
+                }
+            });
+
+            var updateResult = $.ajax({
+                type: 'POST',
+                url: url,
+                async: false,
+                contentType: "application/json",
+                dataType: "json",
+                data: JSON.stringify(infoObj),
+            }).responseJSON;
+            if (updateResult.success != true){
+                alert('服务器错误，请联系管理员');
+                return;
+            }
+            else if(updateResult.success == true)
+            {
+                location.reload(true);
+            }
+        }
+    </script>
+{% endblock %}

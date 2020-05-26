@@ -1,0 +1,11 @@
+.portfolio-block {
+     padding-bottom: 50px;
+     padding-top: 50px;
+}
+
+.portfolio-block form {
+    max-width: 650px;
+    padding: 20px;
+    margin: auto;
+    box-shadow: none;
+}

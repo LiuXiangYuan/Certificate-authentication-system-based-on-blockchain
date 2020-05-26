@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block style %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cv.css') }}">
+{% endblock %}
+
+{% block main %}
+    <main class="page cv-page">
+        {% for message in get_flashed_messages(with_categories=True) %}
+            <div class="alert alert-{{ message[0] }}" role="alert">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{ message[1] }}
+            </div>
+        {% endfor %}
+
+        <section class="portfolio-block cv">
+            <div class="container">
+                <div class="work-experience group">
+                    {% if not academics %}
+                        {% if current_user.role == '1' %}
+                            <p>您暂未有证书信息</p>
+                        {% else %}
+                            <p>{{ isnone }}</p>
+                        {% endif %}
+                    {% else %}
+                        {% for academic in academics %}
+                            <div class="item">
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        <a href="{{ url_for('function.profile_academic', hash_value=academic.hash_value) }}">
+                                            <h3>
+                                                {{ academic.school }} - {{ academic.major }} -
+                                                {{ academic.type }} - {{ academic.name }}
+                                            </h3>
+                                        </a>
+                                        {% if academic.status == 1 %}
+                                            <h4 class="pass">正常</h4>
+                                        {% else %}
+                                            <h4 class="fail">已撤销</h4>
+                                        {% endif %}
+
+                                        <span class="period">
+                                            {{ academic.in_time }} - {{ academic.out_time }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                {% if academics %}
+                    <div class="page-footer">
+                        {{ render_pagination(pagination, align='center') }}
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+{% endblock %}

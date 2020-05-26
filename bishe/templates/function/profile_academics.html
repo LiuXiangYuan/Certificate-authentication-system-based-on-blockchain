@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    学历证书 - {{ academic.school }} - {{ academic.major }} - {{ academic.type }} - {{ academic.name }}
+{% endblock %}
+
+{% block style %}
+    <style type="text/css">
+		.portfolio-block {
+			padding-bottom: 100px;
+			padding-top: 100px;
+		}
+
+		td{
+			width: 100px;
+		}
+
+        .three_button{
+            padding-bottom: 10px;
+        }
+	</style>
+{% endblock %}
+
+{% block main %}
+    <main class="page lanidng-page">
+        {% for message in get_flashed_messages(with_categories=True) %}
+            <div class="alert alert-{{ message[0] }}" role="alert">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{ message[1] }}
+            </div>
+        {% endfor %}
+
+        <section class="portfolio-block block-intro">
+            <div class="container">
+                {% if academic %}
+                    <div class="center-block three_button">
+                        <input type='button' name='submit' onclick='javascript:history.back(-1);' value='返回上一页'>
+                    </div>
+                    <table border="1" width="800" height="800" align="center" cellspacing="0">
+                        <tr align="center">
+                            <td bgcolor="#ededed">姓名</td>
+                            <td colspan="2">{{ academic.name }}</td>
+                            <td bgcolor="#ededed">毕业院校</td>
+                            <td colspan="2">{{ academic.school }}</td>
+                            <td colspan="2" rowspan="3">
+                                <img src="{{ url_for('function.get_image', filename=academic.image) }}"
+                                    style="height: 20%; width: 100%">
+                            </td>
+                        </tr>
+                        <tr align="center">
+                            <td bgcolor="#ededed">学院名称</td>
+                            <td colspan="2">{{ academic.department }}</td>
+                            <td bgcolor="#ededed">专业名称</td>
+                            <td colspan="2">{{ academic.major }}</td>
+                        </tr>
+                        <tr align="center">
+                            <td bgcolor="#ededed">入学时间</td>
+                            <td colspan="2">{{ academic.in_time }}</td>
+                            <td bgcolor="#ededed">毕业时间</td>
+                            <td colspan="2">{{ academic.out_time }}</td>
+                        </tr>
+                        <tr align="center">
+                            <td bgcolor="#ededed">学历类型</td>
+                            <td colspan="2">{{ academic.type }}</td>
+                            <td bgcolor="#ededed">学历层次</td>
+                            <td colspan="2">{{ academic.level }}</td>
+                            <td bgcolor="#ededed">学制</td>
+                            <td>{{ academic.year }}</td>
+                        </tr>
+                        <tr align="center">
+                            <td bgcolor="#ededed">通过时间</td>
+                            <td colspan="2">{{ academic.pass_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                            <td bgcolor="#ededed">处理人</td>
+                            <td colspan="2">{{ academic.pass_table.dealer.name }}</td>
+                            <td bgcolor="#ededed">毕结业结论</td>
+                            {% if academic.status == 0 %}
+                                <td colspan="1"><p style="color: red; font-size: 16px">已撤销</p></td>
+                            {% elif academic.status == 1 %}
+                                <td colspan="1">毕业</td>
+                            {% endif %}
+                        </tr>
+                        <tr align="center">
+                            <td bgcolor="#ededed">证书Hash值</td>
+                            <td colspan="7" align="left">
+                                <p style="word-break: break-all; font-size: 16px">{{ academic.hash_value }}</p>
+                            </td>
+                        </tr>
+                        <tr align="center">
+                            <td bgcolor="#ededed">证书信息校验</td>
+                            {% if believable %}
+                                <td colspan="7" align="left" style="color: #00b0ff">校验通过，证书信息可信</td>
+                            {% else %}
+                                <td colspan="7" align="left" style="color: red">校验失败，证书信息不可信</td>
+                            {% endif %}
+                        </tr>
+                        <tr align="center">
+                            <td bgcolor="#ededed" rowspan="2">备注</td>
+                            <td colspan="7" rowspan="2" align="left" valign="top">
+                                {% if academic.remark %}
+                                    <p style="word-break: break-all; font-size: 16px">{{ academic.remark|safe }}</p>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                {% else %}
+                    <a href="javascript:history.back(-1)">所查询的证书不存在，点击返回上一页</a>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+{% endblock %}

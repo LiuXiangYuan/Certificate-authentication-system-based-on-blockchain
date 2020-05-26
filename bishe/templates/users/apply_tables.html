@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block style %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cv.css') }}">
+{% endblock %}
+
+{% block main %}
+    <main class="page cv-page">
+        {% for message in get_flashed_messages(with_categories=True) %}
+            <div class="alert alert-{{ message[0] }}" role="alert">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{ message[1] }}
+            </div>
+        {% endfor %}
+
+        <section class="portfolio-block cv">
+            <div class="container">
+                <div class="work-experience group">
+                    {% if not apply_tables %}
+                        {% if current_user.role == "1" %}
+                            <p>未有过证书申请，暂未有申请表信息</p>
+                        {% else %}
+                            <p>{{ isnone }}</p>
+                        {% endif %}
+                    {% else %}
+                        {% for apply_table in apply_tables %}
+                            <div class="item">
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        <a href="{{ url_for('function.profile_apply', apply_id=apply_table.id) }}">
+                                            <h3>
+                                                {{ apply_table.school }} - {{ apply_table.major }} -
+                                                {{ apply_table.type }} - {{ apply_table.name }}
+                                            </h3>
+                                        </a>
+                                        {% if apply_table.apply_statue == 1 %}
+                                            <h4 class="pass">通过</h4>
+                                        {% elif apply_table.apply_statue == 2 %}
+                                            <h4 class="pending">待审核</h4>
+                                        {% elif apply_table.apply_statue == 0 %}
+                                            <h4 class="fail">未通过</h4>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                {% if apply_tables %}
+                    {{ render_pagination(pagination, align='center') }}
+                {% endif %}
+            </div>
+        </section>
+    </main>
+{% endblock %}
