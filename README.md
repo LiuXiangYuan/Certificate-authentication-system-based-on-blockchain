@@ -1,3 +1,10 @@
+#### 程序运行
+
+建议使用pipenv创建虚拟环境
+
+命令行下执行 flask init 初始化数据库， 执行 flask init --drop 销毁数据库数据
+执行 flask run 运行程序
+
 #### IOTA 环境搭建
 
 官方教程地址：https://docs.iota.org/docs/compass/0.1/how-to-guides/set-up-a-private-tangle#prerequisites
